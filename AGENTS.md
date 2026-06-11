@@ -2,6 +2,10 @@
 
 ## This is a PUBLIC repository
 
+## 🔴 Commit message rule
+Never add Wibey attribution. No `🌀 Magic applied with Wibey CLI`, no `Co-Authored-By: Wibey CLI`.
+Plain commit messages only. Reason: Walmart IP exposure risk + looks unprofessional on personal GitHub.
+
 Before committing, always run:
 
 ```bash
