@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<!--
+  Deterministic test fixture for mcp-accessibility.
+  Contains intentional accessibility violations for testing.
+  Run: node dist/index.js then audit file:///.../fixtures/test-violations.html
+-->
+<head>
+  <meta charset="UTF-8">
+  <title>Accessibility Test Fixture</title>
+  <style>
+    .low-contrast { color: #aaaaaa; background: #ffffff; }
+  </style>
+</head>
+<body>
+
+  <!-- CRITICAL: image with no alt -->
+  <img src="hero.jpg">
+
+  <!-- CRITICAL: button with no label -->
+  <button></button>
+
+  <!-- SERIOUS: input with no label -->
+  <input type="text" placeholder="Search...">
+
+  <!-- SERIOUS: interactive div (not keyboard accessible) -->
+  <div onclick="void(0)" style="cursor:pointer">Click me</div>
+
+  <!-- MODERATE: low contrast text -->
+  <p class="low-contrast">This text has low contrast and is hard to read.</p>
+
+  <!-- MINOR: link with generic text -->
+  <a href="/page1">Click here</a>
+  <a href="/page2">Read more</a>
+
+  <!-- PASSING: properly labelled form -->
+  <label for="email">Email address</label>
+  <input type="email" id="email" name="email">
+
+  <!-- PASSING: image with alt text -->
+  <img src="logo.png" alt="Company Logo">
+
+  <!-- PASSING: button with label -->
+  <button type="submit">Submit form</button>
+
+</body>
+</html>
