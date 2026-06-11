@@ -9,7 +9,7 @@ A collection of [Model Context Protocol](https://modelcontextprotocol.io) server
 | Package | Status | Description |
 |---------|--------|-------------|
 | [`@mcp-devtools/bundle-analyzer`](./packages/bundle-analyzer) | ✅ Available | Analyze webpack bundle size, find large modules, compare builds |
-| [`@mcp-devtools/accessibility`](./packages/accessibility) | 🚧 Coming soon | Run axe-core against any URL |
+| [`@mcp-devtools/accessibility`](./packages/accessibility) | ✅ Available | Run axe-core audits on any URL — full page or scoped to a component |
 | [`@mcp-devtools/lighthouse`](./packages/lighthouse) | 🚧 Coming soon | Core Web Vitals + Lighthouse scores |
 | [`@mcp-devtools/component-docs`](./packages/component-docs) | 🚧 Coming soon | Generate docs from your React component tree |
 
@@ -111,12 +111,36 @@ npx @modelcontextprotocol/inspector node packages/bundle-analyzer/dist/index.js
 
 ---
 
+## Quick Start — Accessibility
+
+```bash
+npm install -g @mcp-devtools/accessibility
+npx playwright install chromium   # one-time browser download
+```
+
+Add to Claude Desktop config:
+```json
+{
+  "mcpServers": {
+    "accessibility": {
+      "command": "mcp-accessibility"
+    }
+  }
+}
+```
+
+Then ask:
+> "Audit http://localhost:3000 for accessibility issues"
+> "Check the #login-form on my app for WCAG 2.1 AA violations"
+> "What's making my navbar inaccessible?"
+
+---
+
 ## Roadmap
 
 - [ ] Vite bundle report support (`rollup-plugin-visualizer` JSON)
 - [ ] Duplicate package detection (same package, multiple versions)
 - [ ] Tree-shaking opportunity analysis
-- [ ] `@mcp-devtools/accessibility` — axe-core via Playwright
 - [ ] `@mcp-devtools/lighthouse` — Core Web Vitals
 - [ ] `@mcp-devtools/component-docs` — React component tree docs
 
