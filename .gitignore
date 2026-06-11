@@ -5,3 +5,4 @@ dist/
 .DS_Store
 # Lock file contains internal registry URLs — contributors generate their own
 package-lock.json
+AGENTS.md
