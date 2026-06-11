@@ -1,6 +1,33 @@
 {
   "name": "@mcp-devtools/lighthouse",
   "version": "0.1.0",
-  "description": "MCP server — lighthouse (coming soon)",
-  "private": true
+  "description": "MCP server — Lighthouse audits: Core Web Vitals, performance opportunities, category scores",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-lighthouse": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "chrome-launcher": "^1.2.1",
+    "lighthouse": "^13.4.0",
+    "playwright": "^1.60.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "tsx": "^4.19.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
