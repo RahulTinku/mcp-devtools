@@ -1,0 +1,6 @@
+{
+  "name": "@mcp-devtools/lighthouse",
+  "version": "0.1.0",
+  "description": "MCP server — lighthouse (coming soon)",
+  "private": true
+}

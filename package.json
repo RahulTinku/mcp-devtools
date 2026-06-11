@@ -1,0 +1,17 @@
+{
+  "name": "mcp-devtools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP servers that give AI assistants frontend superpowers",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev:bundle": "npm run dev --workspace=packages/bundle-analyzer",
+    "start:bundle": "npm run start --workspace=packages/bundle-analyzer"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
