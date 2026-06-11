@@ -10,7 +10,7 @@ A collection of [Model Context Protocol](https://modelcontextprotocol.io) server
 |---------|--------|-------------|
 | [`@mcp-devtools/bundle-analyzer`](./packages/bundle-analyzer) | ✅ Available | Analyze webpack bundle size, find large modules, compare builds |
 | [`@mcp-devtools/accessibility`](./packages/accessibility) | ✅ Available | Run axe-core audits on any URL — full page or scoped to a component |
-| [`@mcp-devtools/lighthouse`](./packages/lighthouse) | 🚧 Coming soon | Core Web Vitals + Lighthouse scores |
+| [`@mcp-devtools/lighthouse`](./packages/lighthouse) | ✅ Available | Lighthouse audits: scores, Core Web Vitals, opportunities, compare URLs |
 | [`@mcp-devtools/component-docs`](./packages/component-docs) | 🚧 Coming soon | Generate docs from your React component tree |
 
 ---
