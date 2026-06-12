@@ -72,3 +72,30 @@ npm run dev
 ## License
 
 MIT
+
+---
+
+### `map_component_dependencies`
+
+Build a cross-component dependency graph by scanning JSX usage within each component file.
+
+```
+path: string              — Path to a directory of .tsx component files
+max_components?: number   — Maximum components to include. Default: 100
+```
+
+Returns components grouped by role:
+- **Top-level** — not reused by other components (likely pages or entry points)
+- **Composite** — both uses other components and is used by others
+- **Leaf** — no internal dependencies (primitives like Button, Icon)
+- **Isolated** — no dependency edges detected
+
+Also lists the most reused components ranked by usage count.
+
+## Example prompts (dependency graph)
+
+> "Map the component dependencies in src/components"
+
+> "Which components does my Modal depend on?"
+
+> "What are the most reused components in my UI library?"

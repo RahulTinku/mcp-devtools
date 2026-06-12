@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { scanComponents } from "./tools/scan-components.js";
 import { documentComponent } from "./tools/document-component.js";
+import { mapComponentDependencies } from "./tools/map-dependencies.js";
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -53,6 +54,31 @@ export function createServer(): McpServer {
     },
     async ({ path: filePath }) => {
       const result = await documentComponent(filePath);
+      return { content: [{ type: "text" as const, text: result }] };
+    }
+  );
+
+  server.tool(
+    "map_component_dependencies",
+    "Build a cross-component dependency graph for a React/TypeScript component library. " +
+    "Scans JSX usage within each component file to detect which components render which others. " +
+    "Returns components grouped by role: top-level (not reused), composite (uses and is used), " +
+    "leaf (no internal deps), and isolated. Also lists the most reused components by usage count.",
+    {
+      path: z
+        .string()
+        .describe(
+          "Path to a directory containing React .tsx component files. " +
+          "E.g. './src/components' or '/Users/you/project/src/ui'."
+        ),
+      max_components: z
+        .number()
+        .optional()
+        .default(100)
+        .describe("Maximum number of components to include in the graph. Default: 100."),
+    },
+    async ({ path: dirPath, max_components }) => {
+      const result = mapComponentDependencies(dirPath, max_components);
       return { content: [{ type: "text" as const, text: result }] };
     }
   );

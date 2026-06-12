@@ -237,8 +237,8 @@ npx @modelcontextprotocol/inspector node packages/bundle-analyzer/dist/index.js
 - [x] Vite bundle report support (`rollup-plugin-visualizer` JSON)
 - [x] Duplicate package detection (same package, multiple versions)
 - [x] Tree-shaking opportunity analysis
-- [ ] Lighthouse: scheduled audits with trend tracking
-- [ ] Component docs: cross-component dependency graph
+- [x] Lighthouse: scheduled audits with trend tracking (`track_lighthouse` + `get_lighthouse_trend`)
+- [x] Component docs: cross-component dependency graph (`map_component_dependencies`)
 
 ---
 

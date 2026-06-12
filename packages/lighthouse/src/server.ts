@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { runLighthouse } from "./tools/run-lighthouse.js";
 import { compareUrls } from "./tools/compare-urls.js";
+import { trackLighthouse, getLighthouseTrend } from "./tools/track-lighthouse.js";
 
 const CATEGORIES = ["performance", "accessibility", "best-practices", "seo"] as const;
 
@@ -71,6 +72,41 @@ export function createServer(): McpServer {
     },
     async ({ before_url, after_url, mobile }) => {
       const result = await compareUrls(before_url, after_url, mobile);
+      return { content: [{ type: "text" as const, text: result }] };
+    }
+  );
+
+  server.tool(
+    "track_lighthouse",
+    "Run a Lighthouse audit and store the result for trend tracking. " +
+    "Each run saves scores and Core Web Vitals to ~/.mcp-lighthouse/history.json. " +
+    "Returns the current audit result with a ↑/↓/→ trend indicator vs the previous run. " +
+    "Use get_lighthouse_trend to view the full history table.",
+    {
+      url: z.string().describe("URL to audit and track. E.g. https://example.com"),
+      mobile: z.boolean().optional().default(false)
+        .describe("Simulate mobile device. Default: desktop."),
+    },
+    async ({ url, mobile }) => {
+      const result = await trackLighthouse({ url, mobile });
+      return { content: [{ type: "text" as const, text: result }] };
+    }
+  );
+
+  server.tool(
+    "get_lighthouse_trend",
+    "Show the Lighthouse score history for a URL that was previously tracked with track_lighthouse. " +
+    "Returns a table of scores over time and a trend summary (improving / degrading / stable). " +
+    "Scores are stored in ~/.mcp-lighthouse/history.json (up to 50 audits per URL).",
+    {
+      url: z.string().describe("URL to retrieve history for."),
+      mobile: z.boolean().optional().default(false)
+        .describe("Show mobile or desktop history. Default: desktop."),
+      limit: z.number().optional().default(10)
+        .describe("Maximum number of historical entries to show. Default: 10."),
+    },
+    async ({ url, mobile, limit }) => {
+      const result = await getLighthouseTrend(url, mobile, limit);
       return { content: [{ type: "text" as const, text: result }] };
     }
   );
