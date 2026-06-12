@@ -1,5 +1,5 @@
 {
-  "name": "@mcp-devtools/component-docs",
+  "name": "mcp-component-docs",
   "version": "0.1.0",
   "description": "MCP server — scan a React/TypeScript component library and generate accurate prop documentation via the TypeScript compiler",
   "type": "module",

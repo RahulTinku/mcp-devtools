@@ -1,11 +1,13 @@
-# @mcp-devtools/lighthouse
+# mcp-lighthouse-audit
+
+[![npm](https://img.shields.io/npm/v/mcp-lighthouse-audit)](https://www.npmjs.com/package/mcp-lighthouse-audit)
 
 > MCP server — run Lighthouse audits and get performance scores, Core Web Vitals, and actionable opportunities.
 
 ## Install
 
 ```bash
-npm install -g @mcp-devtools/lighthouse
+npm install -g mcp-lighthouse-audit
 npx playwright install chromium   # one-time ~280MB download
 ```
 
@@ -17,7 +19,7 @@ npx playwright install chromium   # one-time ~280MB download
 {
   "mcpServers": {
     "lighthouse": {
-      "command": "mcp-lighthouse"
+      "command": "mcp-lighthouse-audit"
     }
   }
 }

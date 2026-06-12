@@ -1,5 +1,5 @@
 {
-  "name": "@mcp-devtools/bundle-analyzer",
+  "name": "mcp-bundle-analyzer",
   "version": "0.1.0",
   "description": "MCP server — analyze frontend bundle sizes and find optimization opportunities",
   "type": "module",

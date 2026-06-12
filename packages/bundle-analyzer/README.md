@@ -1,11 +1,13 @@
-# @mcp-devtools/bundle-analyzer
+# mcp-bundle-analyzer
+
+[![npm](https://img.shields.io/npm/v/mcp-bundle-analyzer)](https://www.npmjs.com/package/mcp-bundle-analyzer)
 
 > MCP server — analyze webpack and Vite bundle sizes, detect duplicate packages, identify tree-shaking opportunities, and compare builds.
 
 ## Install
 
 ```bash
-npm install -g @mcp-devtools/bundle-analyzer
+npm install -g mcp-bundle-analyzer
 ```
 
 ## Generate a stats file

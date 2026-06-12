@@ -8,12 +8,12 @@ A collection of [Model Context Protocol](https://modelcontextprotocol.io) server
 
 ## Servers
 
-| Package | Description |
-|---------|-------------|
-| [`@mcp-devtools/bundle-analyzer`](#bundle-analyzer) | Analyze webpack/Vite bundle size, find large modules, detect duplicates, tree-shaking analysis, compare builds |
-| [`@mcp-devtools/accessibility`](#accessibility) | Run axe-core audits on any URL — full page or scoped to a component |
-| [`@mcp-devtools/lighthouse`](#lighthouse) | Lighthouse audits: scores, Core Web Vitals, opportunities, compare URLs |
-| [`@mcp-devtools/component-docs`](#component-docs) | TypeScript-compiler-backed prop docs — resolves inherited, imported, and forwardRef props |
+| Package | npm | Description |
+|---------|-----|-------------|
+| [`mcp-bundle-analyzer`](#bundle-analyzer) | [![npm](https://img.shields.io/npm/v/mcp-bundle-analyzer)](https://www.npmjs.com/package/mcp-bundle-analyzer) | Analyze webpack/Vite bundle size, find large modules, detect duplicates, tree-shaking analysis, compare builds |
+| [`mcp-accessibility`](#accessibility) | [![npm](https://img.shields.io/npm/v/mcp-accessibility)](https://www.npmjs.com/package/mcp-accessibility) | Run axe-core audits on any URL — full page or scoped to a component |
+| [`mcp-lighthouse-audit`](#lighthouse) | [![npm](https://img.shields.io/npm/v/mcp-lighthouse-audit)](https://www.npmjs.com/package/mcp-lighthouse-audit) | Lighthouse audits: scores, Core Web Vitals, opportunities, compare URLs |
+| [`mcp-component-docs`](#component-docs) | [![npm](https://img.shields.io/npm/v/mcp-component-docs)](https://www.npmjs.com/package/mcp-component-docs) | TypeScript-compiler-backed prop docs — resolves inherited, imported, and forwardRef props |
 
 ---
 
@@ -24,7 +24,7 @@ Analyze webpack and Vite bundle sizes, find large modules, detect duplicate pack
 ### Install
 
 ```bash
-npm install -g @mcp-devtools/bundle-analyzer
+npm install -g mcp-bundle-analyzer
 ```
 
 ### Generate a stats file
@@ -97,7 +97,7 @@ Run [axe-core](https://github.com/dequelabs/axe-core) accessibility audits on an
 ### Install
 
 ```bash
-npm install -g @mcp-devtools/accessibility
+npm install -g mcp-accessibility
 npx playwright install chromium   # one-time ~280MB download
 ```
 
@@ -130,7 +130,7 @@ Run [Lighthouse](https://github.com/GoogleChrome/lighthouse) audits and get perf
 ### Install
 
 ```bash
-npm install -g @mcp-devtools/lighthouse
+npm install -g mcp-lighthouse-audit
 npx playwright install chromium   # one-time ~280MB download
 ```
 
@@ -140,7 +140,7 @@ npx playwright install chromium   # one-time ~280MB download
 {
   "mcpServers": {
     "lighthouse": {
-      "command": "mcp-lighthouse"
+      "command": "mcp-lighthouse-audit"
     }
   }
 }
@@ -163,7 +163,7 @@ Scan a React + TypeScript component library and generate accurate prop documenta
 ### Install
 
 ```bash
-npm install -g @mcp-devtools/component-docs
+npm install -g mcp-component-docs
 ```
 
 ### Add to Claude Desktop
@@ -200,7 +200,7 @@ npm install -g @mcp-devtools/component-docs
       "command": "mcp-accessibility"
     },
     "lighthouse": {
-      "command": "mcp-lighthouse"
+      "command": "mcp-lighthouse-audit"
     },
     "component-docs": {
       "command": "mcp-component-docs"

@@ -1,11 +1,13 @@
-# @mcp-devtools/accessibility
+# mcp-accessibility
+
+[![npm](https://img.shields.io/npm/v/mcp-accessibility)](https://www.npmjs.com/package/mcp-accessibility)
 
 > MCP server — run axe-core accessibility audits on any URL via Playwright.
 
 ## Install
 
 ```bash
-npm install -g @mcp-devtools/accessibility
+npm install -g mcp-accessibility
 npx playwright install chromium   # one-time ~280MB download
 ```
 

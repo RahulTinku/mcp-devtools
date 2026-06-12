@@ -1,11 +1,13 @@
-# @mcp-devtools/component-docs
+# mcp-component-docs
+
+[![npm](https://img.shields.io/npm/v/mcp-component-docs)](https://www.npmjs.com/package/mcp-component-docs)
 
 > MCP server — generate accurate React component prop documentation using the TypeScript compiler. Resolves inherited props, imported types, and forwardRef patterns correctly.
 
 ## Install
 
 ```bash
-npm install -g @mcp-devtools/component-docs
+npm install -g mcp-component-docs
 ```
 
 ## Add to Claude Desktop
