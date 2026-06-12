@@ -10,7 +10,7 @@ A collection of [Model Context Protocol](https://modelcontextprotocol.io) server
 
 | Package | Description |
 |---------|-------------|
-| [`@mcp-devtools/bundle-analyzer`](#bundle-analyzer) | Analyze webpack/Vite bundle size, find large modules, detect duplicates, compare builds |
+| [`@mcp-devtools/bundle-analyzer`](#bundle-analyzer) | Analyze webpack/Vite bundle size, find large modules, detect duplicates, tree-shaking analysis, compare builds |
 | [`@mcp-devtools/accessibility`](#accessibility) | Run axe-core audits on any URL — full page or scoped to a component |
 | [`@mcp-devtools/lighthouse`](#lighthouse) | Lighthouse audits: scores, Core Web Vitals, opportunities, compare URLs |
 | [`@mcp-devtools/component-docs`](#component-docs) | TypeScript-compiler-backed prop docs — resolves inherited, imported, and forwardRef props |
@@ -67,6 +67,8 @@ Restart Claude Desktop after editing the config.
 
 > "Are there any duplicate packages in my bundle?"
 
+> "Which packages in my bundle can't be tree-shaken?"
+
 > "Compare the bundle before and after my lodash refactor"
 
 ### Tools
@@ -79,6 +81,9 @@ Returns grouped list of large vendor and app modules with import context.
 
 **`detect_duplicate_packages`** — Find npm packages bundled multiple times at different versions.
 Returns each duplicate, all instance paths, wasted size estimate, and fix guidance (`npm dedupe`, `overrides`, webpack `alias`).
+
+**`analyze_tree_shaking`** — Identify tree-shaking opportunities in a webpack bundle.
+Detects CJS modules that can't be tree-shaken, optimization bailouts, and partially used modules (barrel file suspects). Requires `--stats=verbose` and `optimization.usedExports: true`.
 
 **`compare_bundles`** — Diff two builds to measure the impact of a change.
 Returns size diff, changed/added/removed assets with percentages.
@@ -231,7 +236,7 @@ npx @modelcontextprotocol/inspector node packages/bundle-analyzer/dist/index.js
 
 - [x] Vite bundle report support (`rollup-plugin-visualizer` JSON)
 - [x] Duplicate package detection (same package, multiple versions)
-- [ ] Tree-shaking opportunity analysis
+- [x] Tree-shaking opportunity analysis
 - [ ] Lighthouse: scheduled audits with trend tracking
 - [ ] Component docs: cross-component dependency graph
 

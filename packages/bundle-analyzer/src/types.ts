@@ -7,6 +7,12 @@ export interface WebpackModule {
   chunks?: (number | string)[];
   reasons?: Array<{ moduleName: string; type: string }>;
   modules?: WebpackModule[]; // concatenated modules
+  /** Named exports this module provides. null = CJS (unknown). */
+  providedExports?: string[] | null;
+  /** Which exports are actually used. true = all, false = none, string[] = named list, null = unknown. */
+  usedExports?: true | false | string[] | null;
+  /** Reasons webpack couldn't fully optimize this module. */
+  optimizationBailouts?: string[];
 }
 
 /** Webpack stats.json asset entry */

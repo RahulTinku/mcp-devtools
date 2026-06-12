@@ -4,6 +4,7 @@ import { analyzeBundle } from "./tools/analyze-bundle.js";
 import { findLargeModules } from "./tools/find-large-modules.js";
 import { compareBundles } from "./tools/compare-bundles.js";
 import { detectDuplicatePackages } from "./tools/detect-duplicates.js";
+import { analyzeTreeShaking } from "./tools/tree-shaking.js";
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -86,6 +87,26 @@ export function createServer(): McpServer {
     },
     async ({ stats_path }) => {
       const result = detectDuplicatePackages(stats_path);
+      return { content: [{ type: "text" as const, text: result }] };
+    }
+  );
+
+  server.tool(
+    "analyze_tree_shaking",
+    "Identify tree-shaking opportunities in a webpack bundle. " +
+    "Detects CommonJS modules that cannot be tree-shaken, webpack optimization bailouts, " +
+    "and modules where many exports are unused (barrel file suspects). " +
+    "Requires webpack stats.json with --stats=verbose and optimization.usedExports: true for full analysis.",
+    {
+      stats_path: z
+        .string()
+        .describe(
+          "Path to webpack stats.json. Run with --stats=verbose and set " +
+          "optimization: { usedExports: true } in webpack config for best results."
+        ),
+    },
+    async ({ stats_path }) => {
+      const result = analyzeTreeShaking(stats_path);
       return { content: [{ type: "text" as const, text: result }] };
     }
   );
