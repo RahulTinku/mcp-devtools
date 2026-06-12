@@ -3,6 +3,7 @@ import { z } from "zod";
 import { analyzeBundle } from "./tools/analyze-bundle.js";
 import { findLargeModules } from "./tools/find-large-modules.js";
 import { compareBundles } from "./tools/compare-bundles.js";
+import { detectDuplicatePackages } from "./tools/detect-duplicates.js";
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -66,6 +67,25 @@ export function createServer(): McpServer {
     },
     async ({ before_path, after_path }) => {
       const result = compareBundles(before_path, after_path);
+      return { content: [{ type: "text" as const, text: result }] };
+    }
+  );
+
+  server.tool(
+    "detect_duplicate_packages",
+    "Detect the same npm package bundled multiple times at different versions. " +
+    "Duplicates occur when dependencies require incompatible versions of the same library, " +
+    "inflating bundle size unnecessarily. Supports webpack stats.json and rollup-plugin-visualizer JSON (Vite/Rollup). " +
+    "Returns each duplicate package, its instances, wasted size, and how to fix it.",
+    {
+      stats_path: z
+        .string()
+        .describe(
+          "Path to webpack stats.json (requires --stats=verbose) or rollup-plugin-visualizer JSON file"
+        ),
+    },
+    async ({ stats_path }) => {
+      const result = detectDuplicatePackages(stats_path);
       return { content: [{ type: "text" as const, text: result }] };
     }
   );
