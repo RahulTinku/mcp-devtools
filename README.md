@@ -4,38 +4,38 @@
 
 A collection of [Model Context Protocol](https://modelcontextprotocol.io) servers for frontend developers. Plug into Claude Desktop, Cursor, or any MCP-compatible AI client and ask real questions about your frontend project.
 
+**Prerequisites:** Node.js 18+, [Claude Desktop](https://claude.ai/download) or [Cursor](https://www.cursor.com/)
+
 ## Servers
 
-| Package | Status | Description |
-|---------|--------|-------------|
-| [`@mcp-devtools/bundle-analyzer`](./packages/bundle-analyzer) | ✅ Available | Analyze webpack bundle size, find large modules, compare builds |
-| [`@mcp-devtools/accessibility`](./packages/accessibility) | ✅ Available | Run axe-core audits on any URL — full page or scoped to a component |
-| [`@mcp-devtools/lighthouse`](./packages/lighthouse) | ✅ Available | Lighthouse audits: scores, Core Web Vitals, opportunities, compare URLs |
-| [`@mcp-devtools/component-docs`](./packages/component-docs) | ✅ Available | TypeScript-compiler-backed prop docs — resolves inherited, imported, and forwardRef props |
+| Package | Description |
+|---------|-------------|
+| [`@mcp-devtools/bundle-analyzer`](#bundle-analyzer) | Analyze webpack bundle size, find large modules, compare builds |
+| [`@mcp-devtools/accessibility`](#accessibility) | Run axe-core audits on any URL — full page or scoped to a component |
+| [`@mcp-devtools/lighthouse`](#lighthouse) | Lighthouse audits: scores, Core Web Vitals, opportunities, compare URLs |
+| [`@mcp-devtools/component-docs`](#component-docs) | TypeScript-compiler-backed prop docs — resolves inherited, imported, and forwardRef props |
 
 ---
 
-## Quick Start — Bundle Analyzer
+## Bundle Analyzer
 
-### 1. Install
+Analyze webpack bundle sizes, find large modules, and measure the impact of changes.
+
+### Install
 
 ```bash
 npm install -g @mcp-devtools/bundle-analyzer
 ```
 
-### 2. Generate a webpack stats.json
+### Generate a webpack stats file
 
 ```bash
-# webpack CLI
 npx webpack --json > stats.json
-
-# Or in webpack.config.js
-module.exports = { stats: 'verbose' }
 ```
 
-### 3. Add to Claude Desktop
+### Add to Claude Desktop
 
-In `~/Library/Application Support/Claude/claude_desktop_config.json`:
+`~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -47,78 +47,42 @@ In `~/Library/Application Support/Claude/claude_desktop_config.json`:
 }
 ```
 
-### 4. Ask questions
+Restart Claude Desktop after editing the config.
 
-> "Analyze the bundle at ./dist/stats.json and tell me what's making it so large"
+### Example prompts
+
+> "Analyze the bundle at ./dist/stats.json — what's making it so large?"
 
 > "Find all modules larger than 100KB in my webpack build"
 
 > "Compare the bundle before and after my lodash refactor"
 
----
+### Tools
 
-## Tools
+**`analyze_bundle`** — Analyze a webpack stats.json or dist directory.
+Returns total size, asset breakdown, top 20 modules by size, and optimization suggestions.
 
-### `analyze_bundle`
+**`find_large_modules`** — Find modules exceeding a size threshold (default 50KB).
+Returns grouped list of large vendor and app modules with import context.
 
-Analyze a webpack bundle or dist directory.
-
-```
-path: string  — Path to stats.json or dist/ directory
-```
-
-Returns: total size, asset breakdown, top 20 modules by size, optimization suggestions.
-
-### `find_large_modules`
-
-Find modules exceeding a size threshold.
-
-```
-stats_path: string      — Path to webpack stats.json
-threshold_kb?: number   — Size threshold in KB (default: 50)
-```
-
-Returns: grouped list of large vendor and app modules with import context.
-
-### `compare_bundles`
-
-Diff two builds to measure the impact of a change.
-
-```
-before_path: string  — Path to baseline stats.json
-after_path: string   — Path to new stats.json
-```
-
-Returns: size diff, changed/added/removed assets with percentages.
+**`compare_bundles`** — Diff two builds to measure the impact of a change.
+Returns size diff, changed/added/removed assets with percentages.
 
 ---
 
-## Development
+## Accessibility
 
-```bash
-# Install dependencies
-npm install
+Run [axe-core](https://github.com/dequelabs/axe-core) accessibility audits on any URL via Playwright.
 
-# Build bundle-analyzer
-npm run build --workspace=packages/bundle-analyzer
-
-# Run in dev mode (hot reload)
-npm run dev:bundle
-
-# Test with MCP Inspector
-npx @modelcontextprotocol/inspector node packages/bundle-analyzer/dist/index.js
-```
-
----
-
-## Quick Start — Accessibility
+### Install
 
 ```bash
 npm install -g @mcp-devtools/accessibility
-npx playwright install chromium   # one-time browser download
+npx playwright install chromium   # one-time ~280MB download
 ```
 
-Add to Claude Desktop config:
+### Add to Claude Desktop
+
 ```json
 {
   "mcpServers": {
@@ -129,10 +93,122 @@ Add to Claude Desktop config:
 }
 ```
 
-Then ask:
+### Example prompts
+
 > "Audit http://localhost:3000 for accessibility issues"
+
 > "Check the #login-form on my app for WCAG 2.1 AA violations"
+
 > "What's making my navbar inaccessible?"
+
+---
+
+## Lighthouse
+
+Run [Lighthouse](https://github.com/GoogleChrome/lighthouse) audits and get performance scores, Core Web Vitals, and actionable opportunities.
+
+### Install
+
+```bash
+npm install -g @mcp-devtools/lighthouse
+npx playwright install chromium   # one-time ~280MB download
+```
+
+### Add to Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "lighthouse": {
+      "command": "mcp-lighthouse"
+    }
+  }
+}
+```
+
+### Example prompts
+
+> "Run a Lighthouse audit on http://localhost:3000"
+
+> "What's the LCP on my homepage and how can I improve it?"
+
+> "Compare performance scores between my staging and production URLs"
+
+---
+
+## Component Docs
+
+Scan a React + TypeScript component library and generate accurate prop documentation using the TypeScript compiler — resolves inherited props, imported types, and `forwardRef` components correctly.
+
+### Install
+
+```bash
+npm install -g @mcp-devtools/component-docs
+```
+
+### Add to Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "component-docs": {
+      "command": "mcp-component-docs"
+    }
+  }
+}
+```
+
+### Example prompts
+
+> "What props does the Button component accept?"
+
+> "Show me all components in src/components that accept an onChange prop"
+
+> "What's the full prop interface for Modal including inherited props?"
+
+---
+
+## Running all servers
+
+```json
+{
+  "mcpServers": {
+    "bundle-analyzer": {
+      "command": "mcp-bundle-analyzer"
+    },
+    "accessibility": {
+      "command": "mcp-accessibility"
+    },
+    "lighthouse": {
+      "command": "mcp-lighthouse"
+    },
+    "component-docs": {
+      "command": "mcp-component-docs"
+    }
+  }
+}
+```
+
+---
+
+## Development
+
+```bash
+# Install all dependencies
+npm install
+
+# Build all packages
+npm run build
+
+# Build a single package
+npm run build --workspace=packages/bundle-analyzer
+
+# Dev mode (bundle-analyzer)
+npm run dev:bundle
+
+# Test with MCP Inspector
+npx @modelcontextprotocol/inspector node packages/bundle-analyzer/dist/index.js
+```
 
 ---
 
@@ -141,8 +217,8 @@ Then ask:
 - [ ] Vite bundle report support (`rollup-plugin-visualizer` JSON)
 - [ ] Duplicate package detection (same package, multiple versions)
 - [ ] Tree-shaking opportunity analysis
-- [ ] `@mcp-devtools/lighthouse` — Core Web Vitals
-- [ ] `@mcp-devtools/component-docs` — React component tree docs
+- [ ] Lighthouse: scheduled audits with trend tracking
+- [ ] Component docs: cross-component dependency graph
 
 ---
 
