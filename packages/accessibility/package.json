@@ -27,6 +27,28 @@
     "typescript": "^5.6.0",
     "tsx": "^4.19.0"
   },
+  "author": "Rahul Kumar <https://github.com/RahulTinku>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RahulTinku/mcp-devtools.git",
+    "directory": "packages/accessibility"
+  },
+  "homepage": "https://github.com/RahulTinku/mcp-devtools/tree/main/packages/accessibility#readme",
+  "bugs": {
+    "url": "https://github.com/RahulTinku/mcp-devtools/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "accessibility",
+    "wcag",
+    "axe-core",
+    "a11y",
+    "playwright",
+    "claude",
+    "developer-tools"
+  ],
   "engines": {
     "node": ">=18.0.0"
   }

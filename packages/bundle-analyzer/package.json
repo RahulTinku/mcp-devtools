@@ -24,6 +24,29 @@
     "typescript": "^5.6.0",
     "tsx": "^4.19.0"
   },
+  "author": "Rahul Kumar <https://github.com/RahulTinku>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RahulTinku/mcp-devtools.git",
+    "directory": "packages/bundle-analyzer"
+  },
+  "homepage": "https://github.com/RahulTinku/mcp-devtools/tree/main/packages/bundle-analyzer#readme",
+  "bugs": {
+    "url": "https://github.com/RahulTinku/mcp-devtools/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "webpack",
+    "vite",
+    "rollup",
+    "bundle-analysis",
+    "bundle-size",
+    "tree-shaking",
+    "claude",
+    "developer-tools"
+  ],
   "engines": {
     "node": ">=18.0.0"
   }
