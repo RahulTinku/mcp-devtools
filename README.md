@@ -10,7 +10,7 @@ A collection of [Model Context Protocol](https://modelcontextprotocol.io) server
 
 | Package | Description |
 |---------|-------------|
-| [`@mcp-devtools/bundle-analyzer`](#bundle-analyzer) | Analyze webpack bundle size, find large modules, compare builds |
+| [`@mcp-devtools/bundle-analyzer`](#bundle-analyzer) | Analyze webpack/Vite bundle size, find large modules, detect duplicates, compare builds |
 | [`@mcp-devtools/accessibility`](#accessibility) | Run axe-core audits on any URL — full page or scoped to a component |
 | [`@mcp-devtools/lighthouse`](#lighthouse) | Lighthouse audits: scores, Core Web Vitals, opportunities, compare URLs |
 | [`@mcp-devtools/component-docs`](#component-docs) | TypeScript-compiler-backed prop docs — resolves inherited, imported, and forwardRef props |
@@ -19,7 +19,7 @@ A collection of [Model Context Protocol](https://modelcontextprotocol.io) server
 
 ## Bundle Analyzer
 
-Analyze webpack bundle sizes, find large modules, and measure the impact of changes.
+Analyze webpack and Vite bundle sizes, find large modules, detect duplicate packages, and measure the impact of changes.
 
 ### Install
 
@@ -27,10 +27,20 @@ Analyze webpack bundle sizes, find large modules, and measure the impact of chan
 npm install -g @mcp-devtools/bundle-analyzer
 ```
 
-### Generate a webpack stats file
+### Generate a stats file
 
+**Webpack:**
 ```bash
 npx webpack --json > stats.json
+```
+
+**Vite** — add `rollup-plugin-visualizer` to `vite.config.ts`:
+```ts
+import { visualizer } from 'rollup-plugin-visualizer'
+
+export default defineConfig({
+  plugins: [visualizer({ filename: 'stats.json', json: true })]
+})
 ```
 
 ### Add to Claude Desktop
@@ -55,15 +65,20 @@ Restart Claude Desktop after editing the config.
 
 > "Find all modules larger than 100KB in my webpack build"
 
+> "Are there any duplicate packages in my bundle?"
+
 > "Compare the bundle before and after my lodash refactor"
 
 ### Tools
 
-**`analyze_bundle`** — Analyze a webpack stats.json or dist directory.
+**`analyze_bundle`** — Analyze a webpack stats.json, rollup-plugin-visualizer JSON, or dist directory.
 Returns total size, asset breakdown, top 20 modules by size, and optimization suggestions.
 
 **`find_large_modules`** — Find modules exceeding a size threshold (default 50KB).
 Returns grouped list of large vendor and app modules with import context.
+
+**`detect_duplicate_packages`** — Find npm packages bundled multiple times at different versions.
+Returns each duplicate, all instance paths, wasted size estimate, and fix guidance (`npm dedupe`, `overrides`, webpack `alias`).
 
 **`compare_bundles`** — Diff two builds to measure the impact of a change.
 Returns size diff, changed/added/removed assets with percentages.
@@ -214,8 +229,8 @@ npx @modelcontextprotocol/inspector node packages/bundle-analyzer/dist/index.js
 
 ## Roadmap
 
-- [ ] Vite bundle report support (`rollup-plugin-visualizer` JSON)
-- [ ] Duplicate package detection (same package, multiple versions)
+- [x] Vite bundle report support (`rollup-plugin-visualizer` JSON)
+- [x] Duplicate package detection (same package, multiple versions)
 - [ ] Tree-shaking opportunity analysis
 - [ ] Lighthouse: scheduled audits with trend tracking
 - [ ] Component docs: cross-component dependency graph
