@@ -1,19 +1,34 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { WebpackStats, AssetRecord } from "../types.js";
+import { isRollupVisualizerStats } from "../types.js";
 
 const kb = (bytes: number) => (bytes / 1024).toFixed(1) + " KB";
 const sign = (n: number) => (n > 0 ? "+" : "") + n.toFixed(1);
 
-function readAssets(statsPath: string): AssetRecord[] {
-  const stats: WebpackStats = JSON.parse(fs.readFileSync(statsPath, "utf-8"));
-  return (stats.assets ?? []).map((a) => ({
+function readAssets(statsPath: string): { assets: AssetRecord[]; isSourceSizes: boolean } {
+  const parsed: unknown = JSON.parse(fs.readFileSync(statsPath, "utf-8"));
+
+  if (isRollupVisualizerStats(parsed)) {
+    const assets: AssetRecord[] = (parsed.tree.children ?? []).map((chunk) => ({
+      name: chunk.name.replace(/^.*\//, ""),
+      sizeBytes: chunk.originalSize ?? 0,
+      sizeKb: kb(chunk.originalSize ?? 0),
+      isJs: chunk.name.endsWith(".js") && !chunk.name.endsWith(".map"),
+      isCss: chunk.name.endsWith(".css"),
+    }));
+    return { assets, isSourceSizes: true };
+  }
+
+  const stats = parsed as WebpackStats;
+  const assets: AssetRecord[] = (stats.assets ?? []).map((a) => ({
     name: a.name,
     sizeBytes: a.size,
     sizeKb: kb(a.size),
     isJs: a.name.endsWith(".js") && !a.name.endsWith(".map"),
     isCss: a.name.endsWith(".css"),
   }));
+  return { assets, isSourceSizes: false };
 }
 
 export function compareBundles(beforePath: string, afterPath: string): string {
@@ -23,8 +38,8 @@ export function compareBundles(beforePath: string, afterPath: string): string {
   if (!fs.existsSync(resolvedBefore)) return `Error: before path not found: ${resolvedBefore}`;
   if (!fs.existsSync(resolvedAfter)) return `Error: after path not found: ${resolvedAfter}`;
 
-  const beforeAssets = readAssets(resolvedBefore);
-  const afterAssets = readAssets(resolvedAfter);
+  const { assets: beforeAssets, isSourceSizes } = readAssets(resolvedBefore);
+  const { assets: afterAssets } = readAssets(resolvedAfter);
 
   const beforeMap = new Map(beforeAssets.map((a) => [stripHash(a.name), a]));
   const afterMap = new Map(afterAssets.map((a) => [stripHash(a.name), a]));
@@ -39,6 +54,9 @@ export function compareBundles(beforePath: string, afterPath: string): string {
   lines.push(`## Bundle Comparison`);
   lines.push(`**Before:** \`${resolvedBefore}\``);
   lines.push(`**After:** \`${resolvedAfter}\``);
+  if (isSourceSizes) {
+    lines.push(`> ⚠️ Sizes are pre-minification source sizes from rollup-plugin-visualizer.`);
+  }
   lines.push("");
 
   lines.push(`### Overall JS Size`);

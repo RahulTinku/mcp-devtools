@@ -13,15 +13,15 @@ export function createServer(): McpServer {
   // tool(name, description, rawZodShape, handler)
   server.tool(
     "analyze_bundle",
-    "Analyze a frontend bundle. Provide a path to a webpack stats.json file or a dist/ directory. " +
+    "Analyze a frontend bundle. Supports webpack stats.json, rollup-plugin-visualizer JSON (Vite/Rollup), and plain dist/ directories. " +
     "Returns bundle size breakdown, asset list, top modules by size, and actionable optimization suggestions. " +
-    "Generate stats.json with: webpack --json > stats.json",
+    "Webpack: webpack --json > stats.json | Vite: add rollup-plugin-visualizer with json:true to vite.config.ts",
     {
       path: z
         .string()
         .describe(
-          "Path to webpack stats.json file or a dist/ directory. " +
-          "Generate stats.json with: webpack --json > stats.json"
+          "Path to a webpack stats.json, rollup-plugin-visualizer JSON file, or a dist/ directory. " +
+          "Webpack: webpack --json > stats.json | Vite: rollup-plugin-visualizer with json:true option"
         ),
     },
     async ({ path: inputPath }) => {
@@ -32,13 +32,13 @@ export function createServer(): McpServer {
 
   server.tool(
     "find_large_modules",
-    "Find modules in a webpack bundle that exceed a size threshold. " +
-    "Requires a webpack stats.json file with module data (run with --stats=verbose). " +
+    "Find modules in a bundle that exceed a size threshold. " +
+    "Supports webpack stats.json (run with --stats=verbose) and rollup-plugin-visualizer JSON (Vite/Rollup). " +
     "Returns a list of large modules grouped by type (vendor vs app code) with import context.",
     {
       stats_path: z
         .string()
-        .describe("Path to webpack stats.json file"),
+        .describe("Path to webpack stats.json or rollup-plugin-visualizer JSON file"),
       threshold_kb: z
         .number()
         .optional()

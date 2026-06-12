@@ -1,8 +1,89 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { WebpackStats, BundleAnalysis, AssetRecord, ModuleRecord } from "../types.js";
+import type {
+  WebpackStats,
+  BundleAnalysis,
+  AssetRecord,
+  ModuleRecord,
+  RollupVisualizerNode,
+  RollupVisualizerStats,
+} from "../types.js";
+import { isRollupVisualizerStats } from "../types.js";
 
 const kb = (bytes: number) => (bytes / 1024).toFixed(1) + " KB";
+
+// ─── Rollup / Vite (rollup-plugin-visualizer) ────────────────────────────────
+
+function flattenVisualizerNodes(
+  node: RollupVisualizerNode,
+  modules: ModuleRecord[]
+): void {
+  if (!node.children || node.children.length === 0) {
+    if (node.originalSize !== undefined && node.originalSize > 0) {
+      modules.push({
+        name: node.name,
+        sizeBytes: node.originalSize,
+        sizeKb: kb(node.originalSize),
+        chunks: [],
+        importedBy: [],
+      });
+    }
+  } else {
+    for (const child of node.children) {
+      flattenVisualizerNodes(child, modules);
+    }
+  }
+}
+
+function parseRollupVisualizerStats(statsPath: string): BundleAnalysis {
+  const raw = fs.readFileSync(statsPath, "utf-8");
+  const stats: RollupVisualizerStats = JSON.parse(raw);
+
+  const chunks = stats.tree.children ?? [];
+
+  // Build assets from top-level chunk entries
+  const assets: AssetRecord[] = chunks.map((chunk) => ({
+    name: chunk.name.replace(/^.*\//, ""), // strip leading path segments
+    sizeBytes: chunk.originalSize ?? 0,
+    sizeKb: kb(chunk.originalSize ?? 0),
+    isJs: chunk.name.endsWith(".js") && !chunk.name.endsWith(".map"),
+    isCss: chunk.name.endsWith(".css"),
+  }));
+
+  const jsAssets = assets.filter((a) => a.isJs).sort((a, b) => b.sizeBytes - a.sizeBytes);
+  const cssAssets = assets.filter((a) => a.isCss).sort((a, b) => b.sizeBytes - a.sizeBytes);
+  const otherAssets = assets.filter((a) => !a.isJs && !a.isCss && !a.name.endsWith(".map"));
+  const totalSizeBytes = jsAssets.reduce((s, a) => s + a.sizeBytes, 0) +
+    cssAssets.reduce((s, a) => s + a.sizeBytes, 0);
+
+  // Flatten all leaf modules across all chunks
+  const allModules: ModuleRecord[] = [];
+  for (const chunk of chunks) {
+    flattenVisualizerNodes(chunk, allModules);
+  }
+  const topModules = allModules
+    .sort((a, b) => b.sizeBytes - a.sizeBytes)
+    .slice(0, 20);
+
+  const bundlerName = stats.bundler?.name ??
+    (stats.version?.toLowerCase().includes("rollup") ? "rollup" : "vite");
+
+  return {
+    totalSizeBytes,
+    totalSizeKb: kb(totalSizeBytes),
+    assetCount: assets.length,
+    jsAssets,
+    cssAssets,
+    otherAssets,
+    topModules,
+    entrypoints: chunks.filter((c) => c.isEntry).map((c) => c.name.replace(/^.*\//, "")),
+    hasSourceMaps: assets.some((a) => a.name.endsWith(".map")),
+    bundler: bundlerName,
+    sizesAreSourceSizes: true,
+  };
+}
+
+// ─── Webpack ─────────────────────────────────────────────────────────────────
 
 function parseWebpackStats(statsPath: string): BundleAnalysis {
   const raw = fs.readFileSync(statsPath, "utf-8");
@@ -114,8 +195,15 @@ export function analyzeBundle(inputPath: string): string {
   let source: string;
 
   if (isJson) {
-    analysis = parseWebpackStats(resolved);
-    source = `webpack stats.json at ${resolved}`;
+    const raw = fs.readFileSync(resolved, "utf-8");
+    const parsed: unknown = JSON.parse(raw);
+    if (isRollupVisualizerStats(parsed)) {
+      analysis = parseRollupVisualizerStats(resolved);
+      source = `rollup-plugin-visualizer stats at ${resolved}`;
+    } else {
+      analysis = parseWebpackStats(resolved);
+      source = `webpack stats.json at ${resolved}`;
+    }
   } else if (isDir) {
     // Check for stats.json inside the directory
     const statsJson = path.join(resolved, "stats.json");
@@ -138,8 +226,13 @@ function formatAnalysis(a: BundleAnalysis, source: string): string {
 
   lines.push(`## Bundle Analysis`);
   lines.push(`**Source:** ${source}`);
-  if (a.webpackVersion) lines.push(`**Webpack:** ${a.webpackVersion}`);
+  if (a.bundler) lines.push(`**Bundler:** ${a.bundler}`);
+  else if (a.webpackVersion) lines.push(`**Webpack:** ${a.webpackVersion}`);
   if (a.buildTime) lines.push(`**Build time:** ${(a.buildTime / 1000).toFixed(2)}s`);
+  if (a.sizesAreSourceSizes) {
+    lines.push(`> ⚠️ Sizes are pre-minification source sizes from rollup-plugin-visualizer.`);
+    lines.push(`> For actual minified output sizes, run \`analyze_bundle\` on your \`dist/\` directory.`);
+  }
   lines.push("");
 
   lines.push(`### Summary`);
